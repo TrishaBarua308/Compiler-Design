@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+// Function to check if a word is a keyword
+int isKeyword(char *word)
+{
+    char *keywords[] = {"int", "float", "if", "else", "while", "return", "void"};
+    for (int i = 0; i < 7; i++)
+    {
+        if (strcmp(word, keywords[i]) == 0)
+            return 1;
+    }
+    return 0;
+}
+
+// Function to perform lexical analysis
+void lexicalAnalyzer(char *code)
+{
+    int i = 0;
+    char token[50]; // Temporary storage for token
+    int tokenIndex = 0;
+
+    while (code[i] != '\0')
+    {
+        char ch = code[i];
+
+        // Ignore spaces
+        if (isspace(ch))
+        {
+            if (tokenIndex > 0)
+            {
+                token[tokenIndex] = '\0'; // End token
+                if (isKeyword(token))
+                    printf("[Keyword]      : %s\n", token);
+                else if (isdigit(token[0]))
+                    printf("[Number]       : %s\n", token);
+                else
+                    printf("[Identifier]   : %s\n", token);
+                tokenIndex = 0;
+            }
+        }
+        // Check for operators
+        else if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '=' || ch == '<' || ch == '>')
+        {
+            if (tokenIndex > 0)   // Print previous token
+            {
+                token[tokenIndex] = '\0';
+                printf("[Identifier]   : %s\n", token);
+                tokenIndex = 0;
+            }
+            printf("[Operator]     : %c\n", ch);
+        }
+        // Check for delimiters
+        else if (ch == ';' || ch == ',' || ch == '(' || ch == ')' || ch == '{' || ch == '}')
+        {
+            if (tokenIndex > 0)
+            {
+                token[tokenIndex] = '\0';
+                printf("[Identifier]   : %s\n", token);
+                tokenIndex = 0;
+            }
+            printf("[Delimiter]    : %c\n", ch);
+        }
+        // Build token for identifiers, keywords, and numbers
+        else
+        {
+            token[tokenIndex++] = ch;
+        }
+
+        i++;
+    }
+}
+
+// Main function
+int main()
+{
+    char code[] = "float result = (5 + 9 ) * 2 ; ";
+
+    printf("Lexical Analysis of:\n%s\n\n", code);
+    lexicalAnalyzer(code);
+
+    return 0;
+}
